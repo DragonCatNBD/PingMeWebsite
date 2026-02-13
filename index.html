@@ -548,6 +548,10 @@
     </style>
 </head>
 <body>
+    <!-- Audio Elements -->
+    <audio id="clickSound" src="click.mp3" preload="auto"></audio>
+
+    <!-- Loading Splash -->
     <div id="splashScreen" class="overlay-screen">
         <div class="splash-noise"></div>
         <div class="splash-title">JESTER</div>
@@ -557,6 +561,7 @@
         </div>
     </div>
 
+    <!-- Login Gate -->
     <div id="loginGate" class="overlay-screen">
         <div class="splash-noise"></div>
         <div class="login-card">
@@ -568,12 +573,14 @@
 
     <canvas id="particleCanvas"></canvas>
     
+    <!-- Cooldown Overlay -->
     <div id="cooldownOverlay" class="cooldown-overlay">
         <div class="loader"></div>
         <div class="cooldown-text">Please Wait TwT</div>
         <div id="countdownTimer" class="countdown-timer">03:00</div>
     </div>
 
+    <!-- Message Modal -->
     <div id="messageModal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-title">Send Message</div>
@@ -659,6 +666,16 @@
         let globalCountdownInterval = null;
         const COOLDOWN_MS = 3 * 60 * 1000; 
         const COOLDOWN_KEY = 'jester_global_cd';
+
+        function playSound(id) {
+            try {
+                const sound = document.getElementById(id);
+                if (sound) {
+                    sound.currentTime = 0;
+                    sound.play().catch(e => {});
+                }
+            } catch(e) {}
+        }
 
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
@@ -865,6 +882,7 @@
         const modalSend = document.getElementById('modalSend');
 
         function openModal() {
+            playSound('clickSound');
             modal.classList.add('active');
             document.getElementById('msgUsername').value = currentUser;
             document.getElementById('msgContent').value = '';
@@ -946,6 +964,7 @@
                 showStatus('Please login first', false);
                 return;
             }
+            playSound('clickSound');
 
             const timeFormatted = new Date().toLocaleString();
             
@@ -972,7 +991,7 @@
 
                 if (res.ok || res.status === 204) {
                     showStatus('Ping sent! :3', true);
-                    triggerBrowserNotification("Ping Sent", "Jester has been pinged uwu");
+                    triggerBrowserNotification("Ping Sent", "Jester has been pinged");
                     triggerImmersiveFlash();
                     startGlobalCooldown();
                 } else {
@@ -988,6 +1007,7 @@
                 showStatus('Please login first', false);
                 return;
             }
+            playSound('clickSound');
 
             const content = document.getElementById('msgContent').value.trim();
 

@@ -717,7 +717,7 @@
             
             <div style="display: flex; justify-content: center; margin-bottom: 20px; position: relative; height: 20px;">
                 <p class="username" id="usernameContainer">
-                    <span class="shiny-text" id="usernameText" data-text="@jester808">@jester808</span>
+                    <span class="shiny-text" id="usernameText" data-text="@jestercat808">@jestercat808</span>
                 </p>
                 <div class="copied-feedback" id="copiedFeedback">COPIED</div>
             </div>
@@ -734,7 +734,7 @@
                 <div class="info-item">
                     <div class="info-label">Location</div>
                     <div class="info-value">
-                        <span class="shiny-text" id="locationText" data-text="Earth">Denmark</span>
+                        <span class="shiny-text" id="locationText" data-text="Denmark">Denmark</span>
                     </div>
                 </div>
             </div>
@@ -802,7 +802,7 @@
                 <div class="profile-avatar"><img src="pfp1.png" alt="Avatar"></div>
                 <h2 class="profile-name" id="modalName">jester</h2>
                 <p class="profile-title" id="modalTitle">Developer & Gamer</p>
-                <p class="profile-handle" id="modalHandle">@jester808</p>
+                <p class="profile-handle" id="modalHandle">@jestercat808</p>
                 <div class="profile-status"><div class="profile-status-dot"></div><span class="profile-status-text">Online</span></div>
                 <div class="profile-info-grid">
                     <div class="profile-info-item"><div class="profile-info-label">Age</div><div class="profile-info-value" id="modalAge">19</div></div>
@@ -823,7 +823,7 @@
             location: "Denmark",
             title: "Developer & Gamer",
             avatar: "pfp1.png",
-            audioSrc: "Hell-Kitty.mp3", // place your mp3 link here
+            audioSrc: "Hell-Kitty.mp3",
             trackName: "HellKitty",
             trackArtist: "C4MM",
             links: {
@@ -913,8 +913,10 @@
         });
 
         audioElement.addEventListener('timeupdate', () => {
-            const progress = (audioElement.currentTime / audioElement.duration) * 100;
-            progressBar.style.width = `${progress}%`;
+            if(audioElement.duration) {
+                const progress = (audioElement.currentTime / audioElement.duration) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
         });
 
         audioElement.addEventListener('ended', () => {
@@ -925,7 +927,7 @@
         });
 
         progressContainer.addEventListener('click', (e) => {
-            if(!CONFIG.audioSrc) return;
+            if(!CONFIG.audioSrc || !audioElement.duration) return;
             const rect = progressContainer.getBoundingClientRect();
             const percent = (e.clientX - rect.left) / rect.width;
             audioElement.currentTime = percent * audioElement.duration;

@@ -880,6 +880,7 @@
                 trackNameEl.textContent = CONFIG.trackName;
                 trackArtistEl.textContent = CONFIG.trackArtist;
                 audioElement.volume = volumeSlider.value;
+                console.log("Audio source set to:", CONFIG.audioSrc); // Debug log
             } else {
                 trackNameEl.textContent = "No Track";
                 trackArtistEl.textContent = "Configure MP3";
@@ -894,7 +895,7 @@
             }
 
             if (audioElement.paused) {
-                audioElement.play();
+                audioElement.play().catch(e => console.error("Playback failed:", e));
                 playIcon.style.display = 'none';
                 pauseIcon.style.display = 'block';
                 playBtn.classList.add('playing');
@@ -924,6 +925,11 @@
             pauseIcon.style.display = 'none';
             playBtn.classList.remove('playing');
             progressBar.style.width = '0%';
+        });
+        
+        audioElement.addEventListener('error', (e) => {
+            console.error("Error loading audio:", e);
+            trackNameEl.textContent = "Error loading track";
         });
 
         progressContainer.addEventListener('click', (e) => {

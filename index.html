@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* CSS Variables & Styles */
         :root {
             --bg: #0a0a0a;
             --fg: #ffffff;
@@ -24,13 +25,7 @@
             --shine-color: #ffffff;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            cursor: none; 
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
         body {
             font-family: 'Space Grotesk', sans-serif;
             background: var(--bg);
@@ -39,511 +34,151 @@
             overflow-x: hidden;
             position: relative;
         }
+        body.modal-open { overflow: hidden; }
 
-        body.modal-open {
-            overflow: hidden;
-        }
-
-        /* custom cursor */
+        /* Custom Cursor */
         .cursor-dot {
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             background-color: var(--fg);
             border-radius: 50%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 9999;
+            position: fixed; top: 0; left: 0;
+            pointer-events: none; z-index: 9999;
             transform: translate(-50%, -50%);
             transition: transform 0.15s ease, background-color 0.15s ease;
             mix-blend-mode: difference;
         }
+        .cursor-dot.hover { transform: translate(-50%, -50%) scale(2.5); background-color: #fff; }
+        .cursor-dot.click { transform: translate(-50%, -50%) scale(0.5); }
 
-        .cursor-dot.hover {
-            transform: translate(-50%, -50%) scale(2.5);
-            background-color: #fff;
-        }
-
-        .cursor-dot.click {
-            transform: translate(-50%, -50%) scale(0.5);
-        }
-
+        /* Visual FX */
         .noise {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 100;
-            opacity: 0.03;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 100; opacity: 0.03;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
         }
-
         .emission {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 99;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 99;
             background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%);
             backdrop-filter: blur(0.5px);
         }
+        #snowfall { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; pointer-events: none; }
 
-        #snowfall {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 50;
-            pointer-events: none;
-        }
-
+        /* Main Layout */
         .main-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            position: relative;
-            z-index: 10;
-            padding: 20px;
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; position: relative; z-index: 10; padding: 20px;
         }
-
         .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 40px;
-            max-width: 420px;
-            width: 100%;
+            background: var(--card); border: 1px solid var(--border); border-radius: 24px;
+            padding: 40px; max-width: 420px; width: 100%;
             backdrop-filter: blur(20px);
-            box-shadow: 
-                0 0 60px rgba(255, 255, 255, 0.05),
-                0 25px 50px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 0 60px rgba(255, 255, 255, 0.05), 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative; overflow: hidden;
             animation: cardEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
-            transform: translateY(40px) scale(0.95);
+            opacity: 0; transform: translateY(40px) scale(0.95);
         }
-
-        @keyframes cardEntrance {
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
+        @keyframes cardEntrance { to { opacity: 1; transform: translateY(0) scale(1); } }
         .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(255, 255, 255, 0.01) 2px,
-                rgba(255, 255, 255, 0.01) 4px
-            );
-            pointer-events: none;
-            z-index: 1;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.01) 2px, rgba(255, 255, 255, 0.01) 4px);
+            pointer-events: none; z-index: 1;
         }
 
-        .avatar-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 24px;
-            position: relative;
-        }
-
+        /* Avatar */
+        .avatar-container { display: flex; justify-content: center; margin-bottom: 24px; position: relative; }
         .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
+            width: 100px; height: 100px; border-radius: 50%;
             background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-            border: 2px solid var(--border);
-            position: relative;
+            border: 2px solid var(--border); position: relative;
             animation: avatarPulse 4s ease-in-out infinite;
-            cursor: none; 
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            cursor: none; transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
         }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .avatar:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(255, 255, 255, 0.2); }
+        @keyframes avatarPulse { 0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); } 50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.2); } }
+        .avatar::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.1); animation: ringRotate 8s linear infinite; pointer-events: none; }
+        @keyframes ringRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        .avatar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
-        }
-
-        @keyframes avatarPulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); }
-            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.2); }
-        }
-
-        .avatar::after {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: ringRotate 8s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes ringRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
+        /* Text Effects */
         .shiny-text {
-            position: relative;
-            display: inline-block;
+            position: relative; display: inline-block;
             background: linear-gradient(90deg, var(--fg) 0%, var(--fg) 40%, var(--fg) 60%, var(--fg) 100%);
-            background-size: 200% 100%;
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-position: 100% center;
+            background-size: 200% 100%; background-clip: text; -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; background-position: 100% center;
         }
-
         .shiny-text::before {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(90deg, var(--fg) 0%, var(--fg) 35%, var(--shine-color) 50%, var(--fg) 65%, var(--fg) 100%);
-            background-size: 300% 100%;
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-position: 120% center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            background-size: 300% 100%; background-clip: text; -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; background-position: 120% center;
+            opacity: 0; transition: opacity 0.3s ease;
         }
+        .shiny-text:hover::before { opacity: 1; animation: shineEffect 1.5s ease-in-out; }
+        @keyframes shineEffect { 0% { background-position: 120% center; } 100% { background-position: -120% center; } }
 
-        .shiny-text:hover::before {
-            opacity: 1;
-            animation: shineEffect 1.5s ease-in-out;
-        }
+        .display-name { font-family: 'Orbitron', monospace; font-size: 28px; font-weight: 900; text-align: center; margin-bottom: 4px; letter-spacing: 4px; position: relative; }
+        .display-name .shiny-text::before { filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); }
 
-        @keyframes shineEffect {
-            0% { background-position: 120% center; }
-            100% { background-position: -120% center; }
-        }
-
-        .display-name {
-            font-family: 'Orbitron', monospace;
-            font-size: 28px;
-            font-weight: 900;
-            text-align: center;
-            margin-bottom: 4px;
-            letter-spacing: 4px;
-            position: relative;
-        }
-
-        .display-name .shiny-text::before {
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
-        }
-
-        .username {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 14px;
-            color: var(--muted);
-            text-align: center;
-            margin-bottom: 20px;
-            letter-spacing: 1px;
-            cursor: none; 
-            transition: color 0.3s ease;
-            position: relative;
-            display: inline-block;
-        }
-        
+        .username { font-family: 'Space Grotesk', sans-serif; font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 20px; letter-spacing: 1px; cursor: none; transition: color 0.3s ease; position: relative; display: inline-block; }
         .username:hover { color: var(--fg); }
         .username .shiny-text { background: linear-gradient(90deg, var(--muted) 0%, var(--muted) 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .username .shiny-text::before { background: linear-gradient(90deg, var(--muted) 0%, var(--muted) 35%, var(--fg) 50%, var(--muted) 65%, var(--muted) 100%); background-size: 300% 100%; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .username:hover .shiny-text { background: linear-gradient(90deg, var(--fg) 0%, var(--fg) 100%); background-clip: text; -webkit-background-clip: text; }
 
-        .copied-feedback {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            opacity: 0;
-            transform: translateY(5px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            font-size: 12px;
-            color: var(--fg);
-            letter-spacing: 2px;
-            z-index: 5;
-        }
+        .copied-feedback { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; pointer-events: none; opacity: 0; transform: translateY(5px); transition: opacity 0.3s ease, transform 0.3s ease; font-size: 12px; color: var(--fg); letter-spacing: 2px; z-index: 5; }
+        .copied-feedback.show { opacity: 1; transform: translateY(0); }
 
-        .copied-feedback.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 20px 0; animation: dividerGlow 3s ease-in-out infinite; }
+        @keyframes dividerGlow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-        .divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--border), transparent);
-            margin: 20px 0;
-            animation: dividerGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes dividerGlow {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        .info-section {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .info-item {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            cursor: none;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .info-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            transition: left 0.5s ease;
-        }
-
+        /* Info & Tags */
+        .info-section { display: flex; gap: 16px; margin-bottom: 24px; }
+        .info-item { flex: 1; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; cursor: none; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .info-item::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); transition: left 0.5s ease; }
         .info-item:hover::before { left: 100%; }
         .info-item:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
-
         .info-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 6px; }
         .info-value { font-family: 'Orbitron', monospace; font-size: 14px; font-weight: 600; }
         .info-value .shiny-text::before { background: linear-gradient(90deg, var(--fg) 0%, var(--fg) 35%, #ffffff 50%, var(--fg) 65%, var(--fg) 100%); background-size: 300% 100%; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)); }
 
         .tags { display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
-
-        .tag {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 12px;
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            cursor: none;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
+        .tag { font-family: 'Space Grotesk', sans-serif; font-size: 12px; padding: 8px 16px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 20px; cursor: none; transition: all 0.3s ease; position: relative; overflow: hidden; }
         .tag .shiny-text { background: linear-gradient(90deg, var(--muted) 0%, var(--muted) 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .tag .shiny-text::before { background: linear-gradient(90deg, var(--muted) 0%, var(--muted) 35%, var(--fg) 50%, var(--muted) 65%, var(--muted) 100%); background-size: 300% 100%; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .tag:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); transform: scale(1.05); }
         .tag:hover .shiny-text { background: linear-gradient(90deg, var(--fg) 0%, var(--fg) 100%); background-clip: text; -webkit-background-clip: text; }
 
+        /* Social Links */
         .social-links { display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
-
-        .social-link {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: none;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
+        .social-link { width: 44px; height: 44px; border-radius: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: none; transition: all 0.3s ease; position: relative; overflow: hidden; }
         .social-link svg { width: 20px; height: 20px; fill: var(--muted); transition: all 0.3s ease; }
         .social-link::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transition: left 0.5s ease; }
         .social-link:hover::before { left: 100%; }
         .social-link:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); }
         .social-link:hover svg { fill: var(--fg); filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5)); }
 
-        /* custom audio player */
-        .audio-player {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.3s ease;
-        }
+        /* Audio Player */
+        .audio-player { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; transition: all 0.3s ease; }
+        .audio-player:hover { border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 0 20px rgba(255, 255, 255, 0.05); }
+        .play-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; cursor: none; transition: all 0.3s ease; flex-shrink: 0; }
+        .play-btn:hover { background: rgba(255, 255, 255, 0.1); transform: scale(1.05); }
+        .play-btn svg { width: 14px; height: 14px; fill: var(--fg); margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+        .track-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+        .track-name { font-family: 'Space Grotesk', sans-serif; font-size: 12px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .track-artist { font-size: 10px; color: var(--muted); }
+        .progress-container { width: 100%; height: 3px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; cursor: none; position: relative; }
+        .progress-bar { height: 100%; background: var(--fg); border-radius: 2px; width: 0%; transition: width 0.1s linear; }
+        .volume-control { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .volume-icon { cursor: none; }
+        .volume-icon svg { width: 16px; height: 16px; fill: var(--muted); transition: fill 0.3s ease; }
+        .volume-slider { width: 60px; height: 3px; -webkit-appearance: none; appearance: none; background: rgba(255, 255, 255, 0.1); border-radius: 2px; outline: none; cursor: none; }
+        .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 10px; height: 10px; background: var(--fg); border-radius: 50%; cursor: none; transition: transform 0.2s ease; }
+        .volume-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
-        .audio-player:hover {
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
-        }
-
-        .play-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: none;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-
-        .play-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: scale(1.05);
-        }
-
-        .play-btn svg {
-            width: 14px;
-            height: 14px;
-            fill: var(--fg);
-            margin-left: 2px;
-        }
-
-        .play-btn.playing svg {
-            margin-left: 0;
-        }
-
-        .track-info {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .track-name {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 12px;
-            color: var(--fg);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .track-artist {
-            font-size: 10px;
-            color: var(--muted);
-        }
-
-        .progress-container {
-            width: 100%;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            cursor: none;
-            position: relative;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: var(--fg);
-            border-radius: 2px;
-            width: 0%;
-            transition: width 0.1s linear;
-        }
-
-        .volume-control {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .volume-icon {
-            cursor: none;
-        }
-
-        .volume-icon svg {
-            width: 16px;
-            height: 16px;
-            fill: var(--muted);
-            transition: fill 0.3s ease;
-        }
-
-        .volume-slider {
-            width: 60px;
-            height: 3px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            outline: none;
-            cursor: none;
-        }
-
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 10px;
-            height: 10px;
-            background: var(--fg);
-            border-radius: 50%;
-            cursor: none;
-            transition: transform 0.2s ease;
-        }
-
-        .volume-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-        }
-
-        .show-card-btn {
-            width: 100%;
-            padding: 14px 24px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: var(--muted);
-            font-family: 'Orbitron', monospace;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            cursor: none;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
+        .show-card-btn { width: 100%; padding: 14px 24px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 12px; color: var(--muted); font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 600; letter-spacing: 2px; cursor: none; transition: all 0.3s ease; position: relative; overflow: hidden; }
         .show-card-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transition: left 0.5s ease; }
         .show-card-btn:hover::before { left: 100%; }
         .show-card-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.3); color: var(--fg); box-shadow: 0 0 30px rgba(255, 255, 255, 0.1); }
@@ -551,83 +186,16 @@
         .show-card-btn .shiny-text::before { background: linear-gradient(90deg, var(--muted) 0%, var(--muted) 35%, var(--fg) 50%, var(--muted) 65%, var(--muted) 100%); background-size: 300% 100%; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .show-card-btn:hover .shiny-text { background: linear-gradient(90deg, var(--fg) 0%, var(--fg) 100%); background-clip: text; -webkit-background-clip: text; }
 
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 200;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s ease;
-            padding: 20px;
-        }
-
+        /* Modal & Profile Card */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 200; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.4s ease; padding: 20px; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-
-        .profile-card {
-            width: 340px;
-            background: linear-gradient(145deg, rgba(60, 60, 60, 0.3) 0%, rgba(40, 40, 40, 0.2) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
-            padding: 28px;
-            position: relative;
-            overflow: hidden;
-            transform: scale(0.9) translateY(20px);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
+        .profile-card { width: 340px; background: linear-gradient(145deg, rgba(60, 60, 60, 0.3) 0%, rgba(40, 40, 40, 0.2) 100%); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 28px; position: relative; overflow: hidden; transform: scale(0.9) translateY(20px); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .modal-overlay.active .profile-card { transform: scale(1) translateY(0); }
-
-        .profile-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at center, rgba(200, 200, 200, 0.15) 0%, transparent 50%);
-            animation: behindGlow 6s ease-in-out infinite;
-            pointer-events: none;
-        }
-
+        .profile-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at center, rgba(200, 200, 200, 0.15) 0%, transparent 50%); animation: behindGlow 6s ease-in-out infinite; pointer-events: none; }
         @keyframes behindGlow { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } }
-
-        .profile-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            pointer-events: none;
-            opacity: 0.5;
-        }
-
+        .profile-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); pointer-events: none; opacity: 0.5; }
         .profile-card-content { position: relative; z-index: 2; }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #3a3a3a 0%, #252525 100%);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            margin: 0 auto 20px;
-            position: relative;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
+        .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #3a3a3a 0%, #252525 100%); border: 2px solid rgba(255, 255, 255, 0.2); margin: 0 auto 20px; position: relative; box-shadow: 0 0 30px rgba(255, 255, 255, 0.1); overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .profile-avatar::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.1); pointer-events: none; }
         .profile-name { font-family: 'Orbitron', monospace; font-size: 20px; font-weight: 700; text-align: center; color: var(--fg); margin-bottom: 4px; letter-spacing: 1px; }
@@ -643,27 +211,12 @@
         .profile-info-value { font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 600; }
         .contact-btn { width: 100%; padding: 12px 24px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; color: var(--fg); font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500; cursor: none; transition: all 0.3s ease; letter-spacing: 1px; }
         .contact-btn:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.4); box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); }
-
-        .close-modal {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: none;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
+        .close-modal { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; cursor: none; transition: all 0.3s ease; z-index: 10; }
         .close-modal svg { width: 14px; height: 14px; stroke: var(--muted); transition: stroke 0.3s ease; }
         .close-modal:hover { background: rgba(255, 255, 255, 0.1); transform: rotate(90deg); }
         .close-modal:hover svg { stroke: var(--fg); }
 
+        /* Background Effects */
         .bg-particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
         .particle { position: absolute; width: 2px; height: 2px; background: rgba(255, 255, 255, 0.3); border-radius: 50%; animation: particleFloat 20s linear infinite; }
         @keyframes particleFloat { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; } }
@@ -772,8 +325,8 @@
                     <svg id="pauseIcon" style="display: none;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                 </div>
                 <div class="track-info">
-                    <div class="track-name" id="trackName">No Track Loaded</div>
-                    <div class="track-artist" id="trackArtist">Add MP3 link in config</div>
+                    <div class="track-name" id="trackName">Loading...</div>
+                    <div class="track-artist" id="trackArtist">Checking source...</div>
                     <div class="progress-container" id="progressContainer">
                         <div class="progress-bar" id="progressBar"></div>
                     </div>
@@ -810,12 +363,13 @@
                     <div class="profile-info-item"><div class="profile-info-label">Location</div><div class="profile-info-value" id="modalLocation">Denmark</div></div>
                     <div class="profile-info-item"><div class="profile-info-label">Status</div><div class="profile-info-value">Active</div></div>
                 </div>
+                <button class="contact-btn" id="contactBtn">Contact Me</button>
             </div>
         </div>
     </div>
 
     <script>
-        // config
+        // Config
         const CONFIG = {
             displayName: "JESTER",
             username: "@jestercat808",
@@ -836,24 +390,19 @@
             }
         };
 
-        // cursor
         const cursorDot = document.getElementById('cursorDot');
-
         document.addEventListener('mousemove', (e) => {
             cursorDot.style.left = `${e.clientX}px`;
             cursorDot.style.top = `${e.clientY}px`;
         });
-
         const hoverElements = document.querySelectorAll('a, button, .info-item, .tag, .avatar, .username, .social-link, .play-btn, .volume-slider, .progress-container');
         hoverElements.forEach(el => {
             el.addEventListener('mouseenter', () => cursorDot.classList.add('hover'));
             el.addEventListener('mouseleave', () => cursorDot.classList.remove('hover'));
         });
-
         document.addEventListener('mousedown', () => cursorDot.classList.add('click'));
         document.addEventListener('mouseup', () => cursorDot.classList.remove('click'));
 
-        // audio
         let audioContext = null;
         const audioElement = document.getElementById('audioElement');
         const playBtn = document.getElementById('playBtn');
@@ -880,12 +429,18 @@
                 trackNameEl.textContent = CONFIG.trackName;
                 trackArtistEl.textContent = CONFIG.trackArtist;
                 audioElement.volume = volumeSlider.value;
-                console.log("Audio source set to:", CONFIG.audioSrc); // Debug log
+                console.log("Audio source set to:", CONFIG.audioSrc);
             } else {
                 trackNameEl.textContent = "No Track";
                 trackArtistEl.textContent = "Configure MP3";
+                console.error("Please update the audioSrc link in CONFIG");
             }
         }
+
+        audioElement.addEventListener('error', (e) => {
+            console.error("Error loading audio:", e);
+            alert("Error: Could not load audio file. Check console (F12) for details. \n\nMake sure the link works in a new tab.");
+        });
 
         function togglePlay() {
             if(!CONFIG.audioSrc) return;
@@ -895,10 +450,18 @@
             }
 
             if (audioElement.paused) {
-                audioElement.play().catch(e => console.error("Playback failed:", e));
-                playIcon.style.display = 'none';
-                pauseIcon.style.display = 'block';
-                playBtn.classList.add('playing');
+                console.log("Attempting to play...");
+                audioElement.play()
+                    .then(() => {
+                        console.log("Playback started successfully!");
+                        playIcon.style.display = 'none';
+                        pauseIcon.style.display = 'block';
+                        playBtn.classList.add('playing');
+                    })
+                    .catch(e => {
+                        console.error("Playback failed:", e);
+                        alert("Browser blocked playback. Click the page first, then the play button.");
+                    });
             } else {
                 audioElement.pause();
                 playIcon.style.display = 'block';
@@ -926,11 +489,6 @@
             playBtn.classList.remove('playing');
             progressBar.style.width = '0%';
         });
-        
-        audioElement.addEventListener('error', (e) => {
-            console.error("Error loading audio:", e);
-            trackNameEl.textContent = "Error loading track";
-        });
 
         progressContainer.addEventListener('click', (e) => {
             if(!CONFIG.audioSrc || !audioElement.duration) return;
@@ -948,18 +506,18 @@
             }
         });
 
-        // click anywhere to start
         function attemptAutoplay() {
             if (!hasInteracted && CONFIG.audioSrc) {
                 hasInteracted = true;
                 initAudioContext();
+                console.log("User interaction detected. Attempting auto-play...");
                 togglePlay();
                 document.removeEventListener('click', attemptAutoplay);
             }
         }
         document.addEventListener('click', attemptAutoplay);
 
-        // sounds
+        // Ui
         function playHoverSound() {
             if (!audioContext) return;
             const oscillator = audioContext.createOscillator();
@@ -1006,7 +564,6 @@
             oscillator.stop(audioContext.currentTime + 0.3);
         }
 
-        // dom injection
         function applyConfig() {
             const dn = document.getElementById("displayNameText");
             const un = document.getElementById("usernameText");
@@ -1038,12 +595,10 @@
             setupAudio();
         }
 
-        // interactions
         document.addEventListener('click', function initAudioOnClick() {
             initAudioContext();
             document.removeEventListener('click', initAudioOnClick);
         }, { once: true });
-
         document.addEventListener('mouseenter', function initAudioOnHover() {
             initAudioContext();
             document.removeEventListener('mouseenter', initAudioOnHover);
@@ -1055,7 +610,7 @@
             el.addEventListener('click', () => playClickSound());
         });
 
-        // particles
+        // Visuals
         const bgParticles = document.getElementById('bgParticles');
         for (let i = 0; i < 20; i++) {
             const particle = document.createElement('div');
@@ -1066,7 +621,6 @@
             bgParticles.appendChild(particle);
         }
 
-        // snow
         const canvas = document.getElementById('snowfall');
         const ctx = canvas.getContext('2d');
         let snowflakes = [];
@@ -1081,7 +635,6 @@
         resizeCanvas(); initSnowflakes(); animateSnow();
         window.addEventListener('resize', () => resizeCanvas());
 
-        // username copy fix
         const usernameContainer = document.getElementById('usernameContainer');
         const copiedFeedback = document.getElementById('copiedFeedback');
         
@@ -1089,27 +642,20 @@
             e.preventDefault(); 
             navigator.clipboard.writeText(CONFIG.username).then(() => {
                 copiedFeedback.classList.add('show');
-                setTimeout(() => {
-                    copiedFeedback.classList.remove('show');
-                }, 1000);
+                setTimeout(() => { copiedFeedback.classList.remove('show'); }, 1000);
             });
         });
 
-        // card tilt
         const card = document.getElementById('card');
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = (y - centerY) / 25;
-            const rotateY = (centerX - x) / 25;
+            const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+            const centerX = rect.width / 2; const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 25; const rotateY = (centerX - x) / 25;
             card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         });
         card.addEventListener('mouseleave', () => { card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)'; });
 
-        // modal
         const modalOverlay = document.getElementById('modalOverlay');
         const showCardBtn = document.getElementById('showCardBtn');
         const closeModal = document.getElementById('closeModal');
@@ -1120,22 +666,18 @@
         modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) { modalOverlay.classList.remove('active'); document.body.classList.remove('modal-open'); } });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modalOverlay.classList.contains('active')) { modalOverlay.classList.remove('active'); document.body.classList.remove('modal-open'); } });
 
-        // profile card tilt
         profileCard.addEventListener('mousemove', (e) => {
             const rect = profileCard.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = (y - centerY) / 30;
-            const rotateY = (centerX - x) / 30;
+            const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+            const centerX = rect.width / 2; const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 30; const rotateY = (centerX - x) / 30;
             profileCard.style.transform = `scale(1) translateY(0) perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         });
         profileCard.addEventListener('mouseleave', () => { profileCard.style.transform = 'scale(1) translateY(0)'; });
 
         document.getElementById('contactBtn').addEventListener('click', () => console.log('Contact clicked'));
 
-        // initialize
+        // Initialize
         applyConfig();
     </script>
 </body>
